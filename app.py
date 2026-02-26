@@ -4,14 +4,13 @@ import joblib
 from sklearn.datasets import load_iris
 
 # --- LOAD MODEL & DATA ---
-@st.cache_resource # Agar model tidak di-load berulang kali (lebih cepat)
+@st.cache_resource
 def load_model():
     return joblib.load('iris_model.pkl')
 
 model = load_model()
 iris = load_iris()
 
-# --- HEADER ---
 st.title("🌸 Iris Species Predictor")
 
 # --- SIDEBAR INPUT ---
@@ -23,12 +22,13 @@ def user_input_features():
     petal_l = st.sidebar.slider('Petal length', 1.0, 6.9, 1.3)
     petal_w = st.sidebar.slider('Petal width', 0.1, 2.5, 0.2)
     
-    # Menyamakan nama kolom dengan dataset Iris asli agar tidak ValueError
+    # PERBAIKAN: Sesuaikan nama kolom secara presisi dengan model Anda
+    # Berdasarkan error Anda, kolom terakhir harus menggunakan garis bawah: petal_width
     data = {
         'sepal length (cm)': sepal_l,
         'sepal width (cm)': sepal_w,
         'petal length (cm)': petal_l,
-        'petal_width (cm)': petal_w
+        'petal_width (cm)': petal_w  # Sesuai dengan "Feature names seen at fit time"
     }
     return pd.DataFrame(data, index=[0])
 
@@ -38,7 +38,6 @@ df = user_input_features()
 st.subheader('Parameter yang Anda Masukkan:')
 st.write(df)
 
-# Melakukan prediksi
 try:
     prediction = model.predict(df)
     prediction_proba = model.predict_proba(df)
